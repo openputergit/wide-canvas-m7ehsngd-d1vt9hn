@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduReads - Student Learning Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+</head>
+<body class="bg-gray-100 font-[Poppins]">
+    <div id="app" class="min-h-screen">
+        <!-- Navigation -->
+        <nav class="bg-white shadow-md">
+            <div class="container mx-auto px-4 py-3">
+                <div class="flex justify-between items-center">
+                    <h1 class="text-2xl font-bold text-blue-600">EduReads</h1>
+                    <div id="userSection">
+                        <button id="loginBtn" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">Login</button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="container mx-auto px-4 py-8">
+            <!-- Subscription Plans -->
+            <section id="plans" class="mb-12">
+                <h2 class="text-2xl font-bold mb-6 text-center">Choose Your Learning Plan</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Basic Plan -->
+                    <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
+                        <h3 class="text-xl font-bold mb-4">Basic</h3>
+                        <p class="text-3xl font-bold mb-4">$4.99<span class="text-sm font-normal">/month</span></p>
+                        <ul class="mb-6 space-y-2">
+                            <li><i class="bi bi-check-circle-fill text-green-500"></i> Access to Basic Content</li>
+                            <li><i class="bi bi-check-circle-fill text-green-500"></i> Limited Downloads</li>
+                            <li><i class="bi bi-check-circle-fill text-green-500"></i> Ad-supported</li>
+                        </ul>
+                        <button class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700" onclick="subscribe('basic')">Select Plan</button>
+                    </div>
+
+                    <!-- Standard Plan -->
+                    <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow border-2 border-blue-600">
+                        <div class="absolute top-0 right-0 bg-blue-600 text-white px-2 py-1 text-sm rounded-bl-lg">Popular</div>
+                        <h3 class="text-xl font-bold mb-4">Standard</h3>
+                        <p class="text-3xl font-bold mb-4">$9.99<span class="text-sm font-normal">/month</span></p>
+                        <ul class="mb-6 space-y-2">
+                            <li><i class="bi bi-check-circle-fill text-green-500"></i> All Basic Features</li>
+                            <li><i class="bi bi-check-circle-fill text-green-500"></i> Unlimited Downloads</li>
+                            <li><i class="bi bi-check-circle-fill text-green-500"></i> Ad-free Experience</li>
+                            <li><i class="bi bi-check-circle-fill text-green-500"></i> Study Materials</li>
+                        </ul>
+                        <button class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700" onclick="subscribe('standard')">Select Plan</button>
+                    </div>
+
+                    <!-- Premium Plan -->
+                    <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
+                        <h3 class="text-xl font-bold mb-4">Premium</h3>
+                        <p class="text-3xl font-bold mb-4">$14.99<span class="text-sm font-normal">/month</span></p>
+                        <ul class="mb-6 space-y-2">
+                            <li><i class="bi bi-check-circle-fill text-green-500"></i> All Standard Features</li>
+                            <li><i class="bi bi-check-circle-fill text-green-500"></i> Live Tutoring</li>
+                            <li><i class="bi bi-check-circle-fill text-green-500"></i> Practice Tests</li>
+                            <li><i class="bi bi-check-circle-fill text-green-500"></i> Certificate of Completion</li>
+                        </ul>
+                        <button class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700" onclick="subscribe('premium')">Select Plan</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Content Preview -->
+            <section id="preview" class="mb-12">
+                <h2 class="text-2xl font-bold mb-6 text-center">Available Content</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Content cards will be dynamically loaded here -->
+                </div>
+            </section>
+        </main>
+
+        <!-- Loading Overlay -->
+        <div id="loadingOverlay" class="fixed inset-0 bg-black bg-opacity-50 items-center justify-center hidden">
+            <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-600"></div>
+        </div>
+    </div>
+
+    <script>
+        // Sample content data
+        const contents = [
+            { id: 1, title: 'Mathematics', level: 'Grade 10', locked: true },
+            { id: 2, title: 'Physics', level: 'Grade 11', locked: true },
+            { id: 3, title: 'Chemistry', level: 'Grade 9', locked: true },
+            { id: 4, title: 'Biology', level: 'Grade 12', locked: true },
+            { id: 5, title: 'Literature', level: 'Grade 11', locked: true },
+            { id: 6, title: 'History', level: 'Grade 10', locked: true }
+        ];
+
+        // Generate content cards
+        function loadContent() {
+            const previewSection = document.querySelector('#preview div');
+            contents.forEach(content => {
+                const card = `
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <h3 class="text-xl font-bold">${content.title}</h3>
+                                <p class="text-gray-600">${content.level}</p>
+                            </div>
+                            <i class="bi ${content.locked ? 'bi-lock-fill' : 'bi-unlock-fill'} text-${content.locked ? 'red' : 'green'}-500"></i>
+                        </div>
+                        <button class="w-full bg-gray-200 text-gray-700 py-2 rounded-lg hover:bg-gray-300" 
+                                onclick="viewContent(${content.id})">
+                            View Content
+                        </button>
+                    </div>
+                `;
+                previewSection.innerHTML += card;
+            });
+        }
+
+        // Initialize user data in localStorage if not exists
+        if (!localStorage.getItem('userData')) {
+            localStorage.setItem('userData', JSON.stringify({
+                userId: 'user_' + Math.random().toString(36).substr(2, 9),
+                subscription: null
+            }));
+        }
+
+        // Subscribe to a plan
+        async function subscribe(plan) {
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            loadingOverlay.style.display = 'flex';
+
+            try {
+                const userData = JSON.parse(localStorage.getItem('userData'));
+                const response = await fetch('https://r0c8kgwocscg8gsokogwwsw4.zetaverse.one/db', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer 6gfQuGEe3YTS0DUi29pZ2FxDQoo2',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        userId: userData.userId,
+                        appSlug: 'edu-reads',
+                        action: 'create',
+                        table: 'subscriptions',
+                        data: {
+                            plan: plan,
+                            startDate: new Date().toISOString()
+                        }
+                    })
+                });
+
+                if (response.ok) {
+                    userData.subscription = plan;
+                    localStorage.setItem('userData', JSON.stringify(userData));
+                    alert(`Successfully subscribed to ${plan} plan!`);
+                    location.reload();
+                }
+            } catch (error) {
+                console.error('Subscription error:', error);
+                alert('Failed to subscribe. Please try again.');
+            } finally {
+                loadingOverlay.style.display = 'none';
+            }
+        }
+
+        // View content
+        function viewContent(contentId) {
+            const userData = JSON.parse(localStorage.getItem('userData'));
+            if (!userData.subscription) {
+                alert('Please subscribe to view content');
+                return;
+            }
+            // Implementation for viewing content would go here
+            alert('Opening content...');
+        }
+
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', () => {
+            loadContent();
+            const userData = JSON.parse(localStorage.getItem('userData'));
+            if (userData.subscription) {
+                document.getElementById('userSection').innerHTML = `
+                    <div class="flex items-center gap-4">
+                        <span class="text-green-600">${userData.subscription.charAt(0).toUpperCase() + userData.subscription.slice(1)} Plan</span>
+                        <button onclick="logout()" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700">Logout</button>
+                    </div>
+                `;
+            }
+        });
+
+        // Logout function
+        function logout() {
+            const userData = JSON.parse(localStorage.getItem('userData'));
+            userData.subscription = null;
+            localStorage.setItem('userData', JSON.stringify(userData));
+            location.reload();
+        }
+    </script>
+<script>document.body.addEventListener('wheel', e => { if (!e.ctrlKey) return; e.preventDefault(); return }, { passive: false })</script>
+	</body>
+</html>
